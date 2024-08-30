@@ -1,7 +1,4 @@
-# Xamarin.Android
-# Build a Xamarin.Android project.
-# Add steps that test, sign, and distribute an app, save build artifacts, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/xamarin
+# Xamarin.Android Build Pipeline with Dotfuscator NuGet Package Integration
 
 trigger:
 - master
@@ -12,6 +9,7 @@ pool:
 variables:
   buildConfiguration: 'Release'
   outputDirectory: '$(build.binariesDirectory)/$(buildConfiguration)'
+  Dotfuscator_License: '4824F7302305F68C9DE0B3EE2602AC63'  # Your Dotfuscator license key
 
 steps:
 - task: NuGetToolInstaller@1
@@ -23,32 +21,44 @@ steps:
       curl -sSL https://dot.net/v1/dotnet-install.sh | bash
       echo "##vso[task.prependpath]/Library/Frameworks/Mono.framework/Versions/6.4.0/bin"
 
+# Install Dotfuscator NuGet Package
 - task: NuGetCommand@2
   inputs:
     command: 'custom'
-    arguments: 'install PreEmptive.Protection.Dotfuscator.Pro -OutputDirectory $(Agent.TempDirectory) -PreRelease -x -Source https://pkgs.dev.azure.com/jbrawner/_packaging/jbrawner/nuget/v3/index.json'
+    arguments: 'install PreEmptive.Protection.Dotfuscator.Pro -OutputDirectory $(Agent.TempDirectory) -PreRelease -x -Source https://pkgs.dev.azure.com/nirajagrawal886/PRE622/_packaging/DotfuscatorFeed/nuget/v3/index.json'
 
-
-- task: NuGetCommand@2
+# Install Android SDK Command Line Tools
+- task: Bash@3
   inputs:
-   command: 'restore'
-   restoreSolution: '**/*.sln'
-  env: { "NUGET_RESTORE_MSBUILD_ARGS": '/p:DotfuscatorMSBuildDir="$(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools/msbuilddir"' }
+    targetType: 'inline'
+    script: |
+      mkdir -p "$ANDROID_HOME/cmdline-tools"
+      curl -o commandlinetools-mac.zip https://dl.google.com/android/repository/commandlinetools-mac-8512546_latest.zip
+      unzip -q commandlinetools-mac.zip -d "$ANDROID_HOME/cmdline-tools"
+      mv "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest"
+      yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses
+      "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "platforms;android-30" "build-tools;30.0.0"
+  displayName: 'Install Android SDK Command Line Tools and API 30'
 
-- task: XamarinAndroid@1
-  inputs:
-    projectFile: '**/*Android*.csproj'
-    outputDirectory: '$(outputDirectory)'
-    configuration: '$(buildConfiguration)'
-    msbuildArguments: '/p:DotfuscatorMSBuildDir="$(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools/msbuilddir" /p:DotfuscatorLicense="$(Dotfuscator_License)"'
-    jdkOption: 'JDKVersion'
 
+# Restore the solution packages
 - task: NuGetCommand@2
   inputs:
     command: 'restore'
     restoreSolution: '**/*.sln'
-    feedsToUse: 'select'
+  env:
+    NUGET_RESTORE_MSBUILD_ARGS: '/p:DotfuscatorMSBuildDir="$(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools/msbuilddir"'
 
+# Build Xamarin Android project with Dotfuscator MSBuild Arguments
+- task: XamarinAndroid@1
+  inputs:
+    projectFile: 'SimpleBlog.Android.csproj'
+    outputDirectory: '$(outputDirectory)'
+    configuration: '$(buildConfiguration)'
+    msbuildArguments: '/p:DotfuscatorMSBuildDir="$(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools/msbuilddir" /p:DotfuscatorLicense="4824F7302305F68C9DE0B3EE2602AC63'
+    jdkOption: 'JDKVersion'
+
+# Publish build artifacts to the pipeline
 - task: PublishPipelineArtifact@1
   inputs:
     targetPath: '$(Pipeline.Workspace)'
