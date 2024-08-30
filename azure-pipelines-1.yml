@@ -1,0 +1,51 @@
+# Xamarin.Android
+# Build a Xamarin.Android project.
+# Add steps that test, sign, and distribute an app, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/xamarin
+
+trigger:
+- master
+
+pool:
+  vmImage: 'macos-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  outputDirectory: '$(build.binariesDirectory)/$(buildConfiguration)'
+
+steps:
+- task: NuGetToolInstaller@1
+
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      curl -sSL https://dot.net/v1/dotnet-install.sh | bash
+      echo "##vso[task.prependpath]/Library/Frameworks/Mono.framework/Versions/6.4.0/bin"
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'custom'
+    arguments: 'install PreEmptive.Protection.Dotfuscator.Pro -OutputDirectory $(Agent.TempDirectory) -PreRelease -x -Source https://pkgs.dev.azure.com/jbrawner/_packaging/jbrawner/nuget/v3/index.json'
+
+
+- task: NuGetCommand@2
+  inputs:
+   command: 'restore'
+   restoreSolution: '**/*.sln'
+  env: { "NUGET_RESTORE_MSBUILD_ARGS": '/p:DotfuscatorMSBuildDir="$(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools/msbuilddir"' }
+
+- task: XamarinAndroid@1
+  inputs:
+    projectFile: '**/*Android*.csproj'
+    outputDirectory: '$(outputDirectory)'
+    configuration: '$(buildConfiguration)'
+    msbuildArguments: '/p:DotfuscatorMSBuildDir="$(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools/msbuilddir" /p:DotfuscatorLicense="$(Dotfuscator_License)"'
+    jdkOption: 'JDKVersion'
+
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Pipeline.Workspace)'
+    artifact: 'Artifacts'
+    publishLocation: 'pipeline'
