@@ -19,7 +19,7 @@ steps:
     targetType: 'inline'
     script: |
       curl -sSL https://dot.net/v1/dotnet-install.sh | bash
-      echo "##vso[task.prependpath]/Library/Frameworks/Mono.framework/Versions/6.4.0/bin"
+      echo "##vso[task.prependpath]/Library/Frameworks/Mono.framework/Versions/Current/bin"
 
 # Install Dotfuscator NuGet Package
 - task: NuGetCommand@2
