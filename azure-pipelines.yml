@@ -38,7 +38,7 @@ steps:
 # Build Xamarin iOS project with Dotfuscator MSBuild Arguments
 - task: XamarinIOS@1
   inputs:
-    projectFile: './SimpleBlog/SimpleBlog.iOS/SimpleBlog.iOS.csproj'
+    projectFile: './SimpleBlog/SimpleBlog.Android/SimpleBlog.Android.csproj'
     outputDirectory: '$(outputDirectory)'
     configuration: '$(buildConfiguration)'
     msbuildArguments: '/p:DotfuscatorMSBuildDir="$(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools/msbuilddir" /p:DotfuscatorLicense="4824F7302305F68C9DE0B3EE2602AC63"'
