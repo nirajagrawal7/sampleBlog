@@ -218,6 +218,7 @@
 		<!-- If you are using key rotation and your application requires Android Pie (or later), use the last alias in the rotation, otherwise, you need to provide the first alias in the rotation. -->
 		<DotfuscatorAndroidSigningCertFingerprint>
 		</DotfuscatorAndroidSigningCertFingerprint>
+		<DotfuscatorLicense>4824F7302305F68C9DE0B3EE2602AC63</DotfuscatorLicense>
 	</PropertyGroup>
 	<!-- Import the Dotfuscator MSBuild targets. Must be done last. -->
 	<Import Project="$(DotfuscatorMSBuildDir)/PreEmptive.Dotfuscator.Common.targets" />
