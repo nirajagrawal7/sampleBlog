@@ -1,5 +1,3 @@
-# Xamarin.iOS Build Pipeline with Dotfuscator NuGet Package Integration
-
 trigger:
 - master
 
@@ -35,14 +33,22 @@ steps:
   env:
     NUGET_RESTORE_MSBUILD_ARGS: '/p:DotfuscatorMSBuildDir="$(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools/msbuilddir"'
 
+# Log Dotfuscator installation location for debugging
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo "Dotfuscator installed at: $(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools"
+      ls -l $(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools
+
 # Build Xamarin iOS project with Dotfuscator MSBuild Arguments
 - task: XamarinIOS@1
   inputs:
-    projectFile: './SimpleBlog/SimpleBlog.Android/SimpleBlog.Android.csproj'
+    projectFile: './SimpleBlog/SimpleBlog.iOS/SimpleBlog.iOS.csproj'  # Ensure the correct iOS project is being built
     outputDirectory: '$(outputDirectory)'
     configuration: '$(buildConfiguration)'
     msbuildArguments: '/p:DotfuscatorMSBuildDir="$(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools/msbuilddir" /p:DotfuscatorLicense="4824F7302305F68C9DE0B3EE2602AC63"'
-    signingConfiguration: 'Auto'  # Ensure correct provisioning profiles are set
+    signingConfiguration: 'Auto'
 
 # Publish build artifacts to the pipeline
 - task: PublishPipelineArtifact@1
