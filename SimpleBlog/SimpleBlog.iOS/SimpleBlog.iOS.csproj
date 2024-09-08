@@ -199,6 +199,8 @@
 		</ProjectReference>
 	</ItemGroup>
 	<Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
+	<Import Project="$([System.Environment]::GetFolderPath(SpecialFolder.UserProfile))/.dotfuscator.user.props"
+          Condition="Exists('$([System.Environment]::GetFolderPath(SpecialFolder.UserProfile))/.dotfuscator.user.props')"/>
 	<PropertyGroup>
 		<!-- Specify the location of the MSBuild targets, if not already provided. -->
 		<DotfuscatorMSBuildDir Condition="'$(DotfuscatorMSBuildDir)' == ''">$(MSBuildProgramFiles32)/MSBuild/PreEmptive/Dotfuscator/7</DotfuscatorMSBuildDir>
