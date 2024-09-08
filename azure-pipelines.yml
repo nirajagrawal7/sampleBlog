@@ -41,6 +41,12 @@ steps:
       echo "Dotfuscator installed at: $(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools"
       ls -l $(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools
 
+# List files to verify the correct path
+- script: |
+    echo "Listing files in $(Build.SourcesDirectory)"
+    ls -R $(Build.SourcesDirectory)
+  displayName: 'List Files'
+
 # Build Xamarin iOS project with Dotfuscator MSBuild Arguments
 - task: XamarinIOS@1
   inputs:
