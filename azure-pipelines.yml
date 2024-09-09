@@ -30,8 +30,7 @@ steps:
   inputs:
     command: 'restore'
     restoreSolution: '**/*.sln'
-  env:
-    NUGET_RESTORE_MSBUILD_ARGS: '/p:DotfuscatorMSBuildDir="$(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools/msbuilddir"'
+  env: { "NUGET_RESTORE_MSBUILD_ARGS": '/p:DotfuscatorMSBuildDir="$(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools/msbuilddir"' }
 
 # List files to verify correct paths and installations
 - task: Bash@3
