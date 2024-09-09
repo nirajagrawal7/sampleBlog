@@ -33,13 +33,16 @@ steps:
   env:
     NUGET_RESTORE_MSBUILD_ARGS: '/p:DotfuscatorMSBuildDir="$(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools/msbuilddir"'
 
-# Log Dotfuscator installation location for debugging
+# List files to verify correct paths and installations
 - task: Bash@3
   inputs:
     targetType: 'inline'
     script: |
-      echo "Dotfuscator installed at: $(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools"
-      ls -l $(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools
+      echo "Listing files in $(Build.SourcesDirectory)"
+      ls -R $(Build.SourcesDirectory)
+      echo "Listing files in Dotfuscator directory"
+      ls -R $(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools
+
 
 # List files to verify the correct path
 - script: |
