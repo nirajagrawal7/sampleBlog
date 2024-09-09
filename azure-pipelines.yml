@@ -31,7 +31,7 @@ steps:
     command: 'restore'
     restoreSolution: '**/*.sln'
   env:
-    NUGET_RESTORE_MSBUILD_ARGS: '/p:DotfuscatorMSBuildDir="$(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools/msbuilddir/modern"'
+    NUGET_RESTORE_MSBUILD_ARGS: '/p:DotfuscatorMSBuildDir="$(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools/msbuilddir"'
 
 # Log Dotfuscator installation location for debugging
 - task: Bash@3
@@ -53,7 +53,7 @@ steps:
     projectFile: './SimpleBlog/SimpleBlog.iOS/SimpleBlog.iOS.csproj'  # Ensure the correct iOS project is being built
     outputDirectory: '$(outputDirectory)'
     configuration: '$(buildConfiguration)'
-    msbuildArguments: '/p:DotfuscatorMSBuildDir="$(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools/msbuilddir/modern" /p:DotfuscatorLicense="4824F7302305F68C9DE0B3EE2602AC63"'
+    msbuildArguments: '/p:DotfuscatorMSBuildDir="$(Agent.TempDirectory)/PreEmptive.Protection.Dotfuscator.Pro/tools/msbuilddir" /p:DotfuscatorLicense="4824F7302305F68C9DE0B3EE2602AC63"'
     signingConfiguration: 'Auto'
 
 # Publish build artifacts to the pipeline
